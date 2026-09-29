@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>26-27-1 新生工服尺寸登记</title>
+    <!-- 引入 html2canvas 库用于生成图片 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f5f7fa; display: flex; justify-content: center; padding: 20px; }
+        .container { width: 100%; max-width: 500px; background: #fff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); overflow: hidden; position: relative; }
+        
+        /* 顶部绿色横幅 */
+        .header { background-color: #48a863; color: #fff; padding: 20px; text-align: center; }
+        .header h1 { font-size: 20px; margin-bottom: 8px; }
+        .header p { font-size: 12px; opacity: 0.9; line-height: 1.4; }
+        
+        /* 表单主体 */
+        .form-body { padding: 20px; }
+        .section { margin-bottom: 25px; }
+        .section-title { font-size: 15px; font-weight: bold; color: #333; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px; }
+        
+        /* 表单行 */
+        .form-group { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; border-bottom: 1px solid #f0f0f0; padding-bottom: 8px; }
+        .form-label { font-size: 14px; color: #555; width: 100px; flex-shrink: 0; }
+        .form-label .required { color: #f56c6c; margin-left: 4px; }
+        .form-input { flex: 1; border: none; outline: none; font-size: 14px; text-align: right; background: transparent; color: #333; }
+        .form-input::placeholder { color: #ccc; }
+        select.form-input { text-align: right; direction: rtl; color: #333; appearance: none; -webkit-appearance: none; }
+        select.form-input:invalid { color: #ccc; }
+        
+        /* 按钮区 */
+        .btn-group { display: flex; gap: 10px; padding: 0 20px 20px 20px; }
+        .btn { flex: 1; padding: 12px 0; border-radius: 6px; font-size: 14px; border: 1px solid #ddd; background: #f9f9f9; color: #333; cursor: pointer; text-align: center; transition: all 0.2s; }
+        .btn-primary { background-color: #48a863; color: #fff; border: none; }
+        .btn:active { opacity: 0.8; }
+
+        /* 隐藏的提示信息 */
+        #toast { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.7); color: #fff; padding: 10px 20px; border-radius: 4px; font-size: 14px; display: none; z-index: 999; }
+    </style>
+</head>
+<body>
+
+<div class="container" id="capture-area">
+    <div class="header">
+        <h1>26-27-1 新生工服尺寸登记</h1>
+        <p>请本人的实测数据后填写，填完后【复制回执】发文字，或点【截屏卡】截屏截图发回给老师</p>
+    </div>
+
+    <div class="form-body">
+        <!-- 基本信息 -->
+        <div class="section">
+            <div class="section-title">基本信息</div>
+            <div class="form-group">
+                <label class="form-label">姓名<span class="required">*</span></label>
+                <input type="text" class="form-input" id="name" placeholder="请填写真实姓名" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">性别<span class="required">*</span></label>
+                <select class="form-input" id="gender" required>
+                    <option value="" disabled selected>请选择</option>
+                    <option value="男">男</option>
+                    <option value="女">女</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">班级<span class="required">*</span></label>
+                <input type="text" class="form-input" id="classname" placeholder="请选择或输入" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">联系电话</label>
+                <input type="tel" class="form-input" id="phone" placeholder="选填，便于核对">
+            </div>
+        </div>
+
+        <!-- 上衣尺寸 -->
+        <div class="section">
+            <div class="section-title">上衣关键尺寸（单位：cm）</div>
+            <div class="form-group">
+                <label class="form-label">胸围<span class="required">*</span></label>
+                <input type="number" step="0.1" class="form-input" id="chest" placeholder="如 89.0 cm" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">中腰（腰围）<span class="required">*</span></label>
+                <input type="number" step="0.1" class="form-input" id="waist" placeholder="如 73.0 cm" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">衣长<span class="required">*</span></label>
+                <input type="number" step="0.1" class="form-input" id="length" placeholder="参考 70-75 cm" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">肩宽<span class="required">*</span></label>
+                <input type="number" step="0.1" class="form-input" id="shoulder" placeholder="如 45.0 cm" required>
+            </div>
+        </div>
+    </div>
+
+    <div class="btn-group">
+        <button class="btn" onclick="captureCard()">截屏卡</button>
+        <button class="btn" onclick="saveLongImage()">存长图</button>
+        <button class="btn btn-primary" onclick="copyReceipt()">复制回执</button>
+    </div>
+</div>
+
+<div id="toast">已复制</div>
+
+<script>
+    // 校验必填项
+    function validateForm() {
+        const requiredFields = ['name', 'gender', 'classname', 'chest', 'waist', 'length', 'shoulder'];
+        for (let field of requiredFields) {
+            let el = document.getElementById(field);
+            if (!el.value.trim()) {
+                alert('请填写完整的必填项！');
+                el.focus();
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // 显示提示
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        toast.innerText = msg;
+        toast.style.display = 'block';
+        setTimeout(() => { toast.style.display = 'none'; }, 2000);
+    }
+
+    // 1. 复制回执功能
+    function copyReceipt() {
+        if (!validateForm()) return;
+
+        const name = document.getElementById('name').value;
+        const gender = document.getElementById('gender').value;
+        const classname = document.getElementById('classname').value;
+        const phone = document.getElementById('phone').value || '未填';
+        const chest = document.getElementById('chest').value;
+        const waist = document.getElementById('waist').value;
+        const length = document.getElementById('length').value;
+        const shoulder = document.getElementById('shoulder').value;
+
+        const receiptText = `【26-27-1 新生工服尺寸登记】\n` +
+            `姓名：${name}\n` +
+            `性别：${gender}\n` +
+            `班级：${classname}\n` +
+            `联系电话：${phone}\n` +
+            `--- 上衣尺寸 ---\n` +
+            `胸围：${chest} cm\n` +
+            `中腰：${waist} cm\n` +
+            `衣长：${length} cm\n` +
+            `肩宽：${shoulder} cm`;
+
+        // 使用 Clipboard API 复制
+        navigator.clipboard.writeText(receiptText).then(() => {
+            showToast('回执已复制，请粘贴发给老师！');
+        }).catch(err => {
+            alert('复制失败，请手动长按选择复制。');
+        });
+    }
+
+    // 2. 生成图片功能（html2canvas）
+    function generateImage(actionType) {
+        if (!validateForm()) return;
+        
+        const area = document.getElementById('capture-area');
+        showToast('正在生成图片...');
+
+        html2canvas(area, {
+            scale: 2, // 高清
+            backgroundColor: '#ffffff',
+            useCORS: true
+        }).then(canvas => {
+            const imgData = canvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            
+            if (actionType === 'long') {
+                link.download = '工服尺寸登记_长图.png';
+            } else {
+                link.download = '工服尺寸登记_卡片.png';
+            }
+            
+            link.href = imgData;
+            link.click();
+            showToast('图片已保存');
+        }).catch(err => {
+            console.error(err);
+            alert('生成图片失败，请尝试手动截屏。');
+        });
+    }
+
+    function captureCard() { generateImage('card'); }
+    function saveLongImage() { generateImage('long'); }
+</script>
+
+</body>
+</html>
